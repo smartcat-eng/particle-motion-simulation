@@ -23,44 +23,48 @@ particle, = ax.plot([0], [0], 'or')
 velVector = ax.quiver([100], [100], [5], [0], scale_units = 'xy', angles = 'xy', scale = 1, color = "blue")
 fVector = ax.quiver([100], [100], [5], [0], scale_units = 'xy', angles = 'xy', scale = 1, color = "green")
 
-time = np.linspace(0, 2 * np.pi, 500)
-
+angle = -np.pi / 3
 B =2
-v =5
+v =10
 q =3
-m =2
+m =1
 w =(q*B)/m
 p = (m * v)/(q * B)
+rotationNum = 10
 
-startX = 5
-startY = 3
+time = np.linspace(0, rotationNum * 2 * np.pi / w, round(1000 / rotationNum * w))
 
-centerX = startX - (p * np.sin(0))
-centerY = startY - (p * np.cos(0))
+startX = 0
+startY = 0
+
+initVel = ax.quiver([startX], [startY], [v * np.cos(angle)], [v * np.sin(angle)], scale_units = 'xy', angles = 'xy', scale = 1)
+
+centerX = startX - (p * np.sin(angle))
+centerY = startY - (-p * np.cos(angle))
 ax.plot(centerX, centerY, 'x', color = "purple", ms = 10)
 
-pathX = (p * np.cos(time)) + centerX
-pathY = (p * np.sin(time)) + centerY
+pathX = (p * np.cos(np.linspace(0, 2 * np.pi, 200))) + centerX
+pathY = (p * np.sin(np.linspace(0, 2 * np.pi, 200))) + centerY
 ax.plot(pathX, pathY, '--', color = "black")
 
 
 
 def update(frame):
-    posX = [(p * np.sin(w * frame)) + centerX]
-    posY = [p * np.cos(w * frame) + centerY]
+    posX = [(p * np.sin((w * frame) + angle)) + centerX]
+    posY = [-p * np.cos((w * frame) + angle) + centerY]
     particle.set_xdata(posX)
     particle.set_ydata(posY)
 
     velVector.set_offsets(np.column_stack((posX, posY)))
 
-    velX = [v * np.cos(w * frame)]
-    velY = [v * -1 * np.sin(w * frame)]
+    velX = [v * np.cos((w * frame) + angle)]
+    velY = [v * np.sin((w * frame) + angle)]
     velVector.set_UVC(velX, velY)
 
     fVector.set_offsets(np.column_stack((posX, posY)))
 
-    fX = m * v * -1 * w * np.sin(w * frame)
-    fY = m * v * -1 * w * np.cos(w * frame)
+    fX = m * -v * w * np.sin((w * frame) + angle)
+    fY = m * v * w * np.cos((w * frame) + angle)
     fVector.set_UVC(fX, fY)
 
     return particle, velVector, fVector
