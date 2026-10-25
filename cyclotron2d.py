@@ -27,18 +27,23 @@ time = np.linspace(0, 2 * np.pi, 500)
 
 B =2
 v =5
-q =1
-m =1
+q =3
+m =2
 w =(q*B)/m
 p = (m * v)/(q * B)
 
-centerX = 5
-centerY = 3
+startX = 5
+startY = 3
+
+centerX = startX - (p * np.sin(0))
+centerY = startY - (p * np.cos(0))
 ax.plot(centerX, centerY, 'x', color = "purple", ms = 10)
 
 pathX = (p * np.cos(time)) + centerX
 pathY = (p * np.sin(time)) + centerY
 ax.plot(pathX, pathY, '--', color = "black")
+
+
 
 def update(frame):
     posX = [(p * np.sin(w * frame)) + centerX]
