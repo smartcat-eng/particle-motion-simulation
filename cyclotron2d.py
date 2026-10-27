@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import constants
 from matplotlib.animation import FuncAnimation
 
 fig, ax = plt.subplots()
@@ -25,22 +26,23 @@ fVector = ax.quiver([100], [100], [5], [0], scale_units = 'xy', angles = 'xy', s
 
 angle = -np.pi / 3
 B =2
-v =10
-q =3
+v =5
+q =-1
 m =1
-w =(q*B)/m
-p = (m * v)/(q * B)
+w =abs(q*B)/m
+p = (m * v)/abs(q * B)
 rotationNum = 10
+sign = np.sign(q)
 
-time = np.linspace(0, rotationNum * 2 * np.pi / w, round(1000 / rotationNum * w))
+time = np.linspace(0, rotationNum * 2 * np.pi / w, abs(round(1500 / rotationNum * w)))
 
-startX = 0
-startY = 0
+startX = -5
+startY = 3
 
 initVel = ax.quiver([startX], [startY], [v * np.cos(angle)], [v * np.sin(angle)], scale_units = 'xy', angles = 'xy', scale = 1)
 
-centerX = startX - (p * np.sin(angle))
-centerY = startY - (-p * np.cos(angle))
+centerX = startX - (sign * p * np.sin(angle))
+centerY = startY - (sign * -p * np.cos(angle))
 ax.plot(centerX, centerY, 'x', color = "purple", ms = 10)
 
 pathX = (p * np.cos(np.linspace(0, 2 * np.pi, 200))) + centerX
@@ -50,21 +52,21 @@ ax.plot(pathX, pathY, '--', color = "black")
 
 
 def update(frame):
-    posX = [(p * np.sin((w * frame) + angle)) + centerX]
-    posY = [-p * np.cos((w * frame) + angle) + centerY]
+    posX = [(p * np.sin((w * frame * sign) + angle)) + centerX]
+    posY = [-p * np.cos((w * frame * sign) + angle) + centerY]
     particle.set_xdata(posX)
     particle.set_ydata(posY)
 
     velVector.set_offsets(np.column_stack((posX, posY)))
 
-    velX = [v * np.cos((w * frame) + angle)]
-    velY = [v * np.sin((w * frame) + angle)]
+    velX = [sign * v * np.cos((w * frame * sign) + angle)]
+    velY = [sign * v * np.sin((w * frame * sign) + angle)]
     velVector.set_UVC(velX, velY)
 
     fVector.set_offsets(np.column_stack((posX, posY)))
 
-    fX = m * -v * w * np.sin((w * frame) + angle)
-    fY = m * v * w * np.cos((w * frame) + angle)
+    fX = m * -v * w * np.sin((w * frame * sign) + angle)
+    fY = m * v * w * np.cos((w * frame * sign) + angle)
     fVector.set_UVC(fX, fY)
 
     return particle, velVector, fVector
